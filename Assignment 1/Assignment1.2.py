@@ -9,37 +9,71 @@ def reward(predator, move, prey):
 		return 10
 	return 0
 
+def preyMoveList(prey, predator):
+	moveList = [(0,1),(0,-1),(1,0),(-1,0)]
+	for i in range(len(moveList)):
+		move = moveList[i]
+		if prey[0] + move[0] == predator[0] and prey[1] + move[1] == predator[1]:
+			del moveList[i]
+			break
+	probs = [0.2/len(moveList)] * len(moveList)
 
-def valueGrid(prey):
-	values = [ [ 0 for y in range(11) ] for x in range(11)]
+	moveList.append((0,0))
+	probs.append(0.8)
 
-	epsilon = 0.1
-	delta = epsilon*2
+	return moveList, probs
 
-	moves = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
-	probs  = [0.2, 0.2, 0.2, 0.2, 0.2]
 
-	discountFactor = 0.8
+
+
+
+
+def valueFunction():
+
+	allLocations = [ (x,y) for x in range(11) for y in range(11)]
+
+	values = {}
+	for predator in allLocations:
+			for prey in allLocations:
+				values[(predator,prey)] = 0
+
+	predMoves = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
+	predProbs  = [0.2, 0.2, 0.2, 0.2, 0.2]
+
 	deltas = []
-
+	discountFactor = 0.8
+	epsilon = 0.01
+	delta = 1
 	while delta > epsilon:
 		delta = 0
-		for y in range(11):
-			for x in range(11):
-				temp = values[x][y]
+		for predator in allLocations:
+			for prey in allLocations:
+				if predator[0] == prey[0] and predator[1] == prey[1]:
+					continue
+				temp = values[(predator,prey)]
 				moveSum = 0
-				for move, prob in zip(moves,probs):
-					nx, ny = (x + move[0])%11, (y + move[1])%11 
-					moveSum += prob * (reward((x,y), move, prey) + discountFactor*values[nx][ny])
-				values[x][y] = moveSum
-				delta = max(delta, values[x][y] - temp)
+				for move, prob in zip(predMoves,predProbs):
+					preySum = 0
+					for preyMove, preyProb in zip(*preyMoveList(prey,predator)):
+						newPrey = ((prey[0] + preyMove[0])%11, (prey[1] + move[1])%11)
+						preySum += preyProb * (reward(predator, move, prey) + discountFactor * values[(predator,newPrey)])
+
+					moveSum += prob * (preySum)
+				#if moveSum > 0:
+				#	print predator, prey, moveSum
+				values[(predator,prey)] = moveSum
+				delta = max(delta, moveSum - temp)
+		deltas.append(delta)
+
 	return values, deltas
+
 
 predators = [(0,0),(2,3),(2,10),(10,10)]
 preys     = [(5,5),(5,4),(10,0),(0,0)]
 
 
 for predator, prey in zip(predators,preys):
-	print valueGrid(prey)[predator[0]][predator[1]]
+	value = valueFunction()[0][(predator,prey)]
+	print predator, prey, value
 
 

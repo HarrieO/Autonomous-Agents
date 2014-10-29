@@ -9,6 +9,8 @@ class Prey(object):
 		self.x = (self.x+step[0])%11
 		self.y = (self.y+step[1])%11	
 
+	
+
 	def calculateMove(self, worldState):
 		return self.calculateRandomMove(worldState)
 

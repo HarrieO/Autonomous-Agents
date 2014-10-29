@@ -25,14 +25,35 @@ class World(object):
 
 
 	def stopState(self, predatorMove):
-		return false
+		if self.predator.x + predatorMove[0] == self.prey.x and self.predator.y + predatorMove[1] == self.prey.y:
+			return True
+		return False
 
-	def run(self):
-		self.prettyPrint()
+	def run(self, worldPrint=False):
+		if worldPrint:
+			self.prettyPrint()
+
+		self.predator.printState()
+		self.prey.printState()
+
+		iterations = 0;
 		
-		predMove = self.predator.move(self)
+		predMove = self.predator.calculateMove(self)
 		while not self.stopState(predMove):
-			predator()
+			self.predator.move(predMove)
+			self.predator.printState()
+
+			if worldPrint:
+				self.prettyPrint()
+
+			self.prey.printState()
+			self.prey.move(self.prey.calculateMove(self))
+
+			if worldPrint:
+				self.prettyPrint()
+			predMove = self.predator.calculateMove(self)
+
+		print "FIN"
 		
 
 

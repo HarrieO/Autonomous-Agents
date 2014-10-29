@@ -10,7 +10,10 @@ class Predator(object):
 		self.y = (self.x+step[1])%11
 
 	def calculateMove(self, worldState):
-		return self.makeRandomMove()
+		return self.calculateRandomMove()
+
+	def printState(self):
+		print "Predator("+ str(self.x) + "," + str(self.y) + ")"
 
 	def calculateRandomMove(self):
 		randNum = np.floor(np.random.rand()*5)

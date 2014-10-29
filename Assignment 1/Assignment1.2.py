@@ -1,44 +1,21 @@
 from world    import World
 from prey     import Prey
-from predator import Predator
+from agent 	  import Agent
 import numpy as np
-
-
-def reward(predator, move, prey):
-	if (predator[0]+move[0])%11 == prey[0] and (predator[1]+move[1])%11 == prey[1]:
-		return 10
-	return 0
-
-def preyMoveList(prey, predator):
-	moveList = [(0,1),(0,-1),(1,0),(-1,0)]
-	for i in range(len(moveList)):
-		move = moveList[i]
-		if prey[0] + move[0] == predator[0] and prey[1] + move[1] == predator[1]:
-			del moveList[i]
-			break
-	probs = [0.2/len(moveList)] * len(moveList)
-
-	moveList.append((0,0))
-	probs.append(0.8)
-
-	return moveList, probs
-
-
-
 
 
 
 def valueFunction():
 
-	allLocations = [ (x,y) for x in range(11) for y in range(11)]
+	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 
 	values = {}
-	for predator in allLocations:
-			for prey in allLocations:
-				values[(predator,prey)] = 0
+	for predloc in alllocations:
+			for preyloc in alllocations:
+				if preyloc != predloc:
+					values[(predloc,preyloc)] = 0
 
-	predMoves = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
-	predProbs  = [0.2, 0.2, 0.2, 0.2, 0.2]
+	agent = Agent(0,0)
 
 	deltas = []
 	discountFactor = 0.8
@@ -46,22 +23,28 @@ def valueFunction():
 	delta = 1
 	while delta > epsilon:
 		delta = 0
-		for predator in allLocations:
-			for prey in allLocations:
-				if predator[0] == prey[0] and predator[1] == prey[1]:
+		for predloc in alllocations:
+			for preyloc in alllocations:
+				if predloc == preyloc:
 					continue
-				temp = values[(predator,prey)]
+
+				agent.setLocation(predloc)
+				prey 	 = Prey(*preyloc)
+
+				temp = values[(predloc,preyloc)]
 				moveSum = 0
-				for move, prob in zip(predMoves,predProbs):
+				for prob, newPredloc in agent.expand():
 					preySum = 0
-					for preyMove, preyProb in zip(*preyMoveList(prey,predator)):
-						newPrey = ((prey[0] + preyMove[0])%11, (prey[1] + move[1])%11)
-						preySum += preyProb * (reward(predator, move, prey) + discountFactor * values[(predator,newPrey)])
+					for preyProb, newPreyloc in prey.expand(newPredloc):
+						if newPredloc == preyloc :
+							preySum += preyProb * 10
+						else:
+							preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
 
 					moveSum += prob * (preySum)
 				#if moveSum > 0:
 				#	print predator, prey, moveSum
-				values[(predator,prey)] = moveSum
+				values[(predloc,preyloc)] = moveSum
 				delta = max(delta, moveSum - temp)
 		deltas.append(delta)
 

@@ -6,6 +6,9 @@ class Agent(object):
 		self.y 	  = y_init
 		self.name = name
 
+	def loc(self):
+		return (self.x,self.y)
+
 	def printState(self):
 		print self.name + "("+ str(self.x) + "," + str(self.y) + ")"
 

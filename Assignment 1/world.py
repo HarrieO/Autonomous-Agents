@@ -44,7 +44,7 @@ class World(object):
 		predMove = self.predator.pickMove()
 		while not self.stopState(predMove):
 			self.predator.move(predMove)
-			self.prey.move(self.prey.pickMove(self))
+			self.prey.move(self.prey.pickMove(self.predator.loc()))
 			predMove = self.predator.pickMove()
 
 			self.prettyPrint(worldPrint,printStates)

@@ -9,21 +9,30 @@ class Agent(object):
 	def printState(self):
 		print self.name + "("+ str(self.x) + "," + str(self.y) + ")"
 
+	def sameLocation(self, location):
+		return self.x == location[0] and self.y == location[1]
+
+	def locAfterMove(self, move):
+		return ((self.x + move[0])%11, (self.y + move[1])%11)
+
 	def getMoveList(self, stateInfo=None):
 		moveList = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
-		prob 	 = 1/len(moveList)
+		prob 	 = 1.0/len(moveList)
 		return [(prob,move) for move in moveList ]
 
 	def expand(self, stateInfo=None):
 		states = []
-		for prob, move in self.getMoveList(worldState):
-			states.append((prob,(self.x+move[0],self.y+move[1])))
+		for prob, move in self.getMoveList(stateInfo):
+			states.append((prob,self.locAfterMove(move)))
+		return states
 
-	def move(self, step):
-		self.x = (self.x+step[0])%11
-		self.y = (self.y+step[1])%11
+	def setLocation(self, location):
+		self.x, self.y = location
 
-	def pickMove(self, stateInfo):
+	def move(self, move):
+		self.x, self.y = self.locAfterMove(move)
+
+	def pickMove(self, stateInfo=None):
 		moveList = self.getMoveList(stateInfo)
 		pick = np.random.rand()
 		for prob, move in moveList:
@@ -31,8 +40,3 @@ class Agent(object):
 				return move
 			else:
 				pick -= prob
-
-	
-
-
-print Agent(0,1).expand()

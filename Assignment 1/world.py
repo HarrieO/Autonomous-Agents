@@ -30,8 +30,8 @@ class World(object):
 			print
 
 
-	def stopState(self, predatorMove):
-		if self.predator.x + predatorMove[0] == self.prey.x and self.predator.y + predatorMove[1] == self.prey.y:
+	def stopState(self, move):
+		if self.prey.sameLocation(self.predator.locAfterMove(move)):
 			return True
 		return False
 
@@ -41,11 +41,11 @@ class World(object):
 
 		iterations = 0;
 		
-		predMove = self.predator.calculateMove(self)
+		predMove = self.predator.pickMove()
 		while not self.stopState(predMove):
 			self.predator.move(predMove)
-			self.prey.move(self.prey.calculateMove(self))
-			predMove = self.predator.calculateMove(self)
+			self.prey.move(self.prey.pickMove(self))
+			predMove = self.predator.pickMove()
 
 			self.prettyPrint(worldPrint,printStates)
 

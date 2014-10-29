@@ -4,7 +4,7 @@ from predator import Predator
 from agent    import Agent
 import numpy as np
 		
-#World(Prey(0,0), Agent(5,5)).run(worldPrint=True);
+World(Prey(0,0), Agent(5,5)).run(worldPrint=True);
 
 runs = np.array([0]*100)
 for i in range(100):

@@ -6,6 +6,18 @@ class World(object):
 		self.prey   	= prey
 		self.predator 	= predator
 
+	def prettyPrint(self):
+		for row in self.grid:
+			print row
+
+	def stopState(self, predatorMove):
+		return false
+
+	def run(self):
+		world.prettyPrint()
+		
+
+
 
 world = World(None, None)
-print world.grid
+print world.prettyPrint()

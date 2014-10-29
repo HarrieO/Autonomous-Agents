@@ -1,11 +1,14 @@
 import numpy as np
 
-class predator(object):
+class Predator(object):
 	def __init__(self, x_init, y_init):
 		self.x = x_init
 		self.y = y_init
 
-	def makeRandomMove():
+	def move(self, worldState):
+		self.makeRandomMove()
+
+	def makeRandomMove(self):
 		randNum = np.floor(np.random.rand()*5)
 		if(randNum ==0):
 			self.x = (self.x +1)%11

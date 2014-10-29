@@ -1,3 +1,6 @@
+from predator import *
+from prey import *
+
 class World(object):
 	def __init__(self, prey, predator, width=11, height=11):
 		self.width  	= width
@@ -14,10 +17,12 @@ class World(object):
 		return false
 
 	def run(self):
-		world.prettyPrint()
+		self.prettyPrint()
+		self.prey.move(self)
+		self.predator.move(self)
 		
 
 
 
-world = World(None, None)
-print world.prettyPrint()
+world = World(Prey(0,0), Predator(5,5))
+print world.run();

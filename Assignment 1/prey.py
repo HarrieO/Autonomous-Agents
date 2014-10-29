@@ -1,11 +1,14 @@
 import numpy as np
 
-class prey(object):
+class Prey(object):
 	def __init__(self, x_init, y_init):
 		self.x = x_init
 		self.y = y_init
 
-	def makeMove():
+	def move(self, worldState):
+		self.makeMove()
+
+	def makeMove(self):
 		randNum = np.floor(np.random.rand()*10)
 		if(randNum ==0):
 			self.x = (self.x +1)%11

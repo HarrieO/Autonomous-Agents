@@ -10,20 +10,23 @@ class Prey(object):
 		self.y = (self.x+step[1])%11	
 
 	def calculateMove(self, worldState):
-		return self.calculateRandomMove()
+		return self.calculateRandomMove(worldState)
 
 	def printState(self):
 		print "Prey("+ str(self.x) + "," + str(self.y) + ")"
 
-	def calculateRandomMove(self):
-		randNum = np.floor(np.random.rand()*20)
+	def calculateRandomMove(self, worldState):
+		(predX,predY) = (worldState.predator.x,worldState.predator.y)
+		moveList = [(0,-1),(0,1),(1,0),(-1,0),(0,0)]
+		# remove invalid moves
+		for i in range(len(moveList))
+			coords = moveList.pop(i)
+			if ((self.x+coords[0])%11==predX)&&((self.y+coords[1])%11==predY):
+				del moveList[i]
+		randNum = np.floor(np.random.rand()*5)
+		# calculate random move
 		if(randNum ==0):
-			return (0,1)
-		elif(randNum==1):
-			return (0,-1)
-		elif(randNum==2):
-			return (1,0)
-		elif(randNum==3):
-			return (-1,0)
+			secondNum = np.floor(np.random.rand()*(len(moveList)-1))
+			return moveList[secondNum]
 		else:
-			return (0,0)
+			return moveList[-1]

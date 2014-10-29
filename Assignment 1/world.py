@@ -9,19 +9,25 @@ class World(object):
 		self.prey   	= prey
 		self.predator 	= predator
 
-	def prettyPrint(self):
-		print "#" * (self.width*5-1 + 4)
-		for y in range(self.height):
-			print "#",
-			for x in range(self.width):
-				if x == self.prey.x and y == self.prey.y:
-					print "PREY",
-				elif x == self.predator.x and y == self.predator.y:
-					print "PRED",
-				else:
-					print "____",
-			print "#"
-		print "#" * (self.width*5-1 + 4)
+	def prettyPrint(self, worldPrint, printStates):
+		if worldPrint:
+			print "#" * (self.width*5-1 + 4)
+			for y in range(self.height):
+				print "#",
+				for x in range(self.width):
+					if x == self.prey.x and y == self.prey.y:
+						print "PREY",
+					elif x == self.predator.x and y == self.predator.y:
+						print "PRED",
+					else:
+						print "____",
+				print "#"
+			print "#" * (self.width*5-1 + 4)
+			print
+		if printStates:
+			self.predator.printState()
+			self.prey.printState()
+			print
 
 
 	def stopState(self, predatorMove):
@@ -29,34 +35,29 @@ class World(object):
 			return True
 		return False
 
-	def run(self, worldPrint=False):
-		if worldPrint:
-			self.prettyPrint()
-
-		self.predator.printState()
-		self.prey.printState()
+	def run(self, worldPrint=False, printStates=False):
+		
+		self.prettyPrint(worldPrint,printStates)
 
 		iterations = 0;
 		
 		predMove = self.predator.calculateMove(self)
 		while not self.stopState(predMove):
 			self.predator.move(predMove)
-			self.predator.printState()
-
-			if worldPrint:
-				self.prettyPrint()
-
-			self.prey.printState()
 			self.prey.move(self.prey.calculateMove(self))
-
-			if worldPrint:
-				self.prettyPrint()
 			predMove = self.predator.calculateMove(self)
 
-		print "FIN"
+			self.prettyPrint(worldPrint,printStates)
+
+			iterations += 1
+
+		if worldPrint or printStates:
+			print 
+			print "Finished after", iterations, "moves."
+		return iterations
 		
 
 
 
 world = World(Prey(0,0), Predator(5,5))
-print world.run();
+print world.run(printStates=True);

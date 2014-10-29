@@ -56,8 +56,3 @@ class World(object):
 			print "Finished after", iterations, "moves."
 		return iterations
 		
-
-
-
-world = World(Prey(0,0), Predator(5,5))
-print world.run(printStates=True);

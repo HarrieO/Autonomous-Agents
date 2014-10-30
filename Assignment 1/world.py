@@ -1,4 +1,4 @@
-from predator import *
+from agent import *
 from prey import *
 
 class World(object):

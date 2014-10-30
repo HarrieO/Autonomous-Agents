@@ -1,53 +1,60 @@
 from world    import World
 from prey     import Prey
-from predator import Predator
+from agent 	  import Agent
 import numpy as np
 
-values = np.zeros([11,11])
+def valueIteration():
 
-def reward(predator, move, prey):
-	if (predator[0]+move[0])%11 == prey.x and (predator[1]+move[1])%11 == prey.y:
-		return 10
-	return 0
+	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 
-def valueIteration(prey):
-	moves = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
+	values = {}
+	bestMoves = {}
+	for predloc in alllocations:
+			for preyloc in alllocations:
+				if preyloc != predloc:
+					values[(predloc,preyloc)] = 0
+
+	agent = Agent(0,0)
+
+	deltas = []
 	discountFactor = 0.8
-
 	epsilon = 0.01
-	delta = 0.0
-	oldValues = values.copy()
-	for y in range(10):
-		for x in range(10):
-			sumList = np.zeros(len(moves))
-			for i in range(len(moves)):
-				move = moves[i]
-				sumList[i] = reward([x,y], move, prey) + discountFactor*oldValues[x+move[0],y+move[1]]
-			maximum =  max(sumList)
-			delta = max(delta,np.abs(values[x,y]-maximum))
-			values[x,y] = maximum
-
-	while delta >= epsilon:
-		oldValues = values.copy()
-		for y in range(10):
-			for x in range(10):
-				sumList = np.zeros(len(moves))
-				for i in range(len(moves)):
-					move = moves[i]
-					sumList[i] = reward([x,y], move, prey) + discountFactor*oldValues[x+move[0],y+move[1]]
-				maximum =  max(sumList)
-				delta = max(delta,np.abs(values[x,y]-maximum))
-				values[x,y] = maximum
+	delta = 1
+	while delta > epsilon:
+		delta = 0
+		for predloc in alllocations:
+			for preyloc in alllocations:
+				if predloc == preyloc:
+					continue
+				agent.setLocation(predloc)
+				prey = Prey(*preyloc)
+				temp = values[(predloc,preyloc)]
+				bestVal = 0
+				bestMove = (0,0)
+				for prob, predMove in agent.getMoveList():
+					preySum = 0
+					newPredloc = ((predloc[0] + predMove[0])%11,(predloc[1] + predMove[1])%11)
+					if newPredloc == preyloc :
+						preySum += 10.0
+					else:
+						for preyProb, newPreyloc in prey.expand(newPredloc):
+							preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
+					if bestVal <= preySum:
+						bestVal = preySum
+						bestMove = predMove
+				values[(predloc,preyloc)] = bestVal
+				bestMoves[(predloc,preyloc)] = bestMove
+				delta = max(delta, np.abs(bestVal - temp))
+		deltas.append(delta)
 
 	def policy(state):
-		sumList = np.zeros(len(moves))
-		for i in range(len(moves)):
-			move = moves[i]
-			sumList[i] = reward(predator, move, prey) + discountFactor*values[state[0]+move[0],state[1]+move[1]]
-		bestIndex = np.argmax(sumList)
-		return moves[bestIndex]
-
+		predloc, preyloc = state
+		agent.setLocation(predloc)
+		prey = Prey(*preyloc)
+		return bestMoves[(predloc,preyloc)]
 	return policy
-prey = Prey(5,5)
-p = valueIteration(prey)
-print p([0,0])
+
+policy = valueIteration()
+print policy(((0,1),(0,2)))
+print policy(((0,2),(0,0)))
+print policy(((0,0),(5,5)))

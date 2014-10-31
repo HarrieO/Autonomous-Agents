@@ -11,9 +11,9 @@ def valueFunction():
 
 	values = {}
 	for predloc in alllocations:
-			for preyloc in alllocations:
-				if preyloc != predloc:
-					values[(predloc,preyloc)] = 0
+		for preyloc in alllocations:
+			if preyloc != predloc:
+				values[(predloc,preyloc)] = 0
 
 	agent = Agent(0,0)
 
@@ -35,17 +35,16 @@ def valueFunction():
 				moveSum = 0
 				for prob, newPredloc in agent.expand():
 					preySum = 0
-					for preyProb, newPreyloc in prey.expand(newPredloc):
-						if newPredloc == preyloc :
-							preySum += preyProb * 10
-						else:
-							preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
-
+					if newPredloc == preyloc :
+						preySum += 10.0
+					else:
+						for preyProb, newPreyloc in prey.expand(newPredloc):
+								preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
 					moveSum += prob * (preySum)
 				#if moveSum > 0:
 				#	print predator, prey, moveSum
 				values[(predloc,preyloc)] = moveSum
-				delta = max(delta, moveSum - temp)
+				delta = max(delta, np.abs(moveSum - temp))
 		deltas.append(delta)
 
 	return values, deltas

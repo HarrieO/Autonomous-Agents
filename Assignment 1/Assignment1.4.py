@@ -22,6 +22,7 @@ def valueIteration():
 	delta = 1
 	while delta > epsilon:
 		delta = 0
+		newValues = {}
 		for predloc in alllocations:
 			for preyloc in alllocations:
 				if predloc == preyloc:
@@ -42,9 +43,10 @@ def valueIteration():
 					if bestVal <= preySum:
 						bestVal = preySum
 						bestMove = predMove
-				values[(predloc,preyloc)] = bestVal
+				newValues[(predloc,preyloc)] = bestVal
 				bestMoves[(predloc,preyloc)] = bestMove
 				delta = max(delta, np.abs(bestVal - temp))
+		values = newValues
 		deltas.append(delta)
 
 	def policy(state):

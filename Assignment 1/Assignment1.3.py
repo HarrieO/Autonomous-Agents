@@ -17,6 +17,7 @@ def evaluatePolicy(policy, values=None):
 	delta = 1
 	while delta > epsilon:
 		delta = 0
+		newValues = {}
 		for predloc in alllocations:
 			for preyloc in alllocations:
 				if predloc == preyloc:
@@ -31,8 +32,9 @@ def evaluatePolicy(policy, values=None):
 				else:
 					for preyProb, newPreyloc in prey.expand(newPredloc):
 							preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
-				values[(predloc,preyloc)] = preySum
+				newValues[(predloc,preyloc)] = preySum
 				delta = max(delta, np.abs(preySum - temp))
+		values = newValues
 	return values
 
 def improvePolicy(policy,values):

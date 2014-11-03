@@ -22,7 +22,8 @@ def valueFunction():
 	epsilon = 0.01
 	delta = 1
 	while delta > epsilon:
-		delta = 0
+		delta = 
+		newValues = {}
 		for predloc in alllocations:
 			for preyloc in alllocations:
 				if predloc == preyloc:
@@ -43,8 +44,9 @@ def valueFunction():
 					moveSum += prob * (preySum)
 				#if moveSum > 0:
 				#	print predator, prey, moveSum
-				values[(predloc,preyloc)] = moveSum
+				newValues[(predloc,preyloc)] = moveSum
 				delta = max(delta, np.abs(moveSum - temp))
+		values = newValues
 		deltas.append(delta)
 
 	return values, deltas

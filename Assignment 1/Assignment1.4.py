@@ -2,6 +2,7 @@ from world    import World
 from prey     import Prey
 from agent 	  import Agent
 import numpy as np
+import time
 
 def valueIteration():
 
@@ -56,7 +57,10 @@ def valueIteration():
 		return bestMoves[(predloc,preyloc)]
 	return policy
 
+start = time.time()
 policy = valueIteration()
+print "Time taken", round((time.time()-start)*10000)/100, "seconds"
+
 print policy(((0,1),(0,2)))
 print policy(((0,2),(0,0)))
 print policy(((0,0),(5,5)))

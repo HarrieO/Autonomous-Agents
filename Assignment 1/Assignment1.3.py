@@ -87,8 +87,10 @@ for discountFactor in discountFactors:
 	numIt, values = iterate_policy(discountFactor)	
 	print "For a discount factor of ", discountFactor, ", ", numIt, " iterations were required for convergence."
 
+values[((5,5),(5,5))]=10
+
 for y in range(11):
 	valueList = []
 	for x in range(11):
-		valueList.append(values([(x,y),(5,5)]))
+		valueList.append(values[((x,y),(5,5))])
 	print valueList

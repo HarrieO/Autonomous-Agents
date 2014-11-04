@@ -63,14 +63,16 @@ for discountFactor in discountFactors:
 	numIt, values,_ = valueIteration(discountFactor)	
 	print "For a discount factor of ", discountFactor, ", ", numIt, " iterations were required for convergence."
 
+values[((5,5),(5,5))]=10
+
 for y in range(11):
 	valueList = []
 	for x in range(11):
-		valueList.append(values([(x,y),(5,5)]))
+		valueList.append(values[((x,y),(5,5))])
 	print valueList
 
 start = time.time()
-_,_,policy=valueIteration()
+_,_,policy=valueIteration(0.8)
 print "Time taken", round((time.time()-start)*10000)/100, "seconds"
 
 print policy(((0,1),(0,2)))

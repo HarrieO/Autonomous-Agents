@@ -1,6 +1,5 @@
 from world    import World
 from prey     import Prey
-from predator import Predator
 from agent    import Agent
 import numpy as np
 		

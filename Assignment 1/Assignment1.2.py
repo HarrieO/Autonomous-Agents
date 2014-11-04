@@ -22,7 +22,6 @@ def valueFunction():
 	epsilon = 0.01
 	delta = 1
 	while delta > epsilon:
-		delta = 
 		newValues = {}
 		for predloc in alllocations:
 			for preyloc in alllocations:

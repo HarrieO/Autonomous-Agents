@@ -4,7 +4,7 @@ from agent 	  import Agent
 import numpy as np
 import time
 
-def valueIteration():
+def valueIteration(discountFactor):
 
 	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 
@@ -18,9 +18,9 @@ def valueIteration():
 	agent = Agent(0,0)
 
 	deltas = []
-	discountFactor = 0.8
 	epsilon = 0.01
 	delta = 1
+	numIt = 0
 	while delta > epsilon:
 		delta = 0
 		newValues = {}
@@ -49,16 +49,28 @@ def valueIteration():
 				delta = max(delta, np.abs(bestVal - temp))
 		values = newValues
 		deltas.append(delta)
+		numIt+=1
 
 	def policy(state):
 		predloc, preyloc = state
 		agent.setLocation(predloc)
 		prey = Prey(*preyloc)
 		return bestMoves[(predloc,preyloc)]
-	return policy
+	return numIt, values, policy
+
+discountFactors = np.array([0.1,0.5,0.7,0.9])
+for discountFactor in discountFactors:
+	numIt, values,_ = valueIteration(discountFactor)	
+	print "For a discount factor of ", discountFactor, ", ", numIt, " iterations were required for convergence."
+
+for y in range(11):
+	valueList = []
+	for x in range(11):
+		valueList.append(values([(x,y),(5,5)]))
+	print valueList
 
 start = time.time()
-policy = valueIteration()
+_,_,policy=valueIteration()
 print "Time taken", round((time.time()-start)*10000)/100, "seconds"
 
 print policy(((0,1),(0,2)))

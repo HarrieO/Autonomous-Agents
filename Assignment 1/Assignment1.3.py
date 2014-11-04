@@ -3,10 +3,9 @@ from prey     import Prey
 from agent 	  import Agent
 import numpy as np
 
-discountFactor = 0.8
 epsilon = 0.01
 
-def evaluatePolicy(policy, values=None):
+def evaluatePolicy(policy, discountFactor, values=None):
 	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 	if values is None:
 		values = {}
@@ -15,6 +14,7 @@ def evaluatePolicy(policy, values=None):
 			if preyloc != predloc:
 				values[(predloc,preyloc)] = 0
 	delta = 1
+	numIt = 0
 	while delta > epsilon:
 		delta = 0
 		newValues = {}
@@ -35,9 +35,10 @@ def evaluatePolicy(policy, values=None):
 				newValues[(predloc,preyloc)] = preySum
 				delta = max(delta, np.abs(preySum - temp))
 		values = newValues
-	return values
+		numIt +=1
+	return values, numIt
 
-def improvePolicy(policy,values):
+def improvePolicy(policy,values, discountFactor):
 	stable = True
 	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 	moves = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
@@ -65,16 +66,29 @@ def improvePolicy(policy,values):
 				stable = False
 	return policy, stable
 
-# initialize policy
-policy = {}
-alllocations = [ (x,y) for x in range(11) for y in range(11)]
-for predloc in alllocations:
-	for preyloc in alllocations:
-		policy[(predloc,preyloc)] = (0,0)
-stable = False
-values = None
-while not stable:
-	values = evaluatePolicy(policy, values)
-	print "Evaluated values"
-	policy, stable = improvePolicy(policy, values)
-	print "Improved policy"
+def iterate_policy(discountFactor):
+	# initialize policy
+	policy = {}
+	alllocations = [ (x,y) for x in range(11) for y in range(11)]
+	for predloc in alllocations:
+		for preyloc in alllocations:
+			policy[(predloc,preyloc)] = (0,0)
+	stable = False
+	values = None
+	numIt = 0
+	while not stable:
+		values, numItEval = evaluatePolicy(policy, discountFactor, values)
+		numIt += numItEval
+		policy, stable = improvePolicy(policy, values,discountFactor)
+		numIt +=1
+	return numIt, values
+discountFactors = np.array([0.1,0.5,0.7,0.9])
+for discountFactor in discountFactors:
+	numIt, values = iterate_policy(discountFactor)	
+	print "For a discount factor of ", discountFactor, ", ", numIt, " iterations were required for convergence."
+
+for y in range(11):
+	valueList = []
+	for x in range(11):
+		valueList.append(values([(x,y),(5,5)]))
+	print valueList

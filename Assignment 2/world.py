@@ -2,57 +2,32 @@ from agent import *
 from prey import *
 
 class World(object):
-	def __init__(self, prey, predator, width=11, height=11):
+	def __init__(self, preyLoc, predatorLoc, width=11, height=11):
 		self.width  	= width
 		self.height 	= height
-		#self.grid   	= [[None for x in range(width)] for y in range(height) ]
-		self.prey   	= prey
-		self.predator 	= predator
+		# position is the relative distance between predator and prey
+		self.position  	= self.relativedist(predatorLoc[0]-preyLoc[0],predatorLoc[1]-preyLoc[1])
+	
+	# torialdistance on a dimension given an absolute distance and the span of dimension in the world (width height)
+	def toroidaldis(self, distance, span):
+		return int((distance+(span-1)/2.0)%11-(span-1)/2.0)
 
-	def prettyPrint(self, worldPrint, printStates):
-		if worldPrint:
-			print "#" * (self.width*5-1 + 4)
-			for y in range(self.height):
-				print "#",
-				for x in range(self.width):
-					if x == self.prey.x and y == self.prey.y:
-						print "PREY",
-					elif x == self.predator.x and y == self.predator.y:
-						print "PRED",
-					else:
-						print "____",
-				print "#"
-			print "#" * (self.width*5-1 + 4)
-			print
-		if printStates:
-			self.predator.printState()
-			self.prey.printState()
-			print
+	# returns the relative delta x and delta y given an absolute delta x and delta y
+	def relativedist(self, dx, dy):
+		return self.toroidaldis(dx,self.width),self.toroidaldis(dy,self.height)
 
+	# relative position after given move, (move performed by predator)
+	def posAfterMove(self, move):
+		return self.relativedist(self.position[0] + move[0],self.position[1] + move[1])
 
-	def stopState(self, move):
-		if self.prey.sameLocation(self.predator.locAfterMove(move)):
-			return True
-		return False
+	# moves the predator (move is a tuple (dx,dy))
+	def move(self, move):
+		self.position = self.posAfterMove(move)
 
-	def run(self, worldPrint=False, printStates=False):
-		
-		self.prettyPrint(worldPrint,printStates)
+	# relative position after prey moves
+	def posAfterPreyMove(self, move):
+		return self.posAfterMove((-move[0],-move[1]))
 
-		iterations = 0;
-		
-		predMove = self.predator.pickMove()
-		while not self.stopState(predMove):
-			self.predator.move(predMove)
-			self.prey.move(self.prey.pickMove(self.predator.loc()))
-			predMove = self.predator.pickMove()
-
-			self.prettyPrint(worldPrint,printStates)
-
-			iterations += 1
-
-		if worldPrint or printStates:
-			print 
-			print "Finished after", iterations, "moves."
-		return iterations
-		
+	# moves the prey (move is a tuple (dx,dy))
+	def preyMove(self, move):
+		self.position = self.posAfterPreyMove(move)

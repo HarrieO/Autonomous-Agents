@@ -33,14 +33,13 @@ def valueFunction():
 				moveSum = 0
 				for prob, newPredloc in agent.expand():
 					preySum = 0
+					# absorbing state
 					if newPredloc == preyloc :
 						preySum += 10.0
 					else:
 						for preyProb, newPreyloc in prey.expand(newPredloc):
 							preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
 					moveSum += prob * preySum
-				#if moveSum > 0:
-				#	print predator, prey, moveSum
 				newValues[(predloc,preyloc)] = moveSum
 				delta = max(delta, np.abs(moveSum - temp))
 		values = newValues
@@ -48,7 +47,7 @@ def valueFunction():
 
 	return values, numIt
 
-
+# displays the values requested by the assignment
 predators = [(0,0),(2,3),(2,10),(10,10)]
 preys     = [(5,5),(5,4),(10,0),(0,0)]
 values,numIt = valueFunction()

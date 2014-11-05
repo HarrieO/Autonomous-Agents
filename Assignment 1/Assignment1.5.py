@@ -10,6 +10,7 @@ import time
 def mindistance(x1, x2):
 	return ((x1-x2)+5)%11-5
 
+# given absolute positions the relative position is returned
 def rewriteStates(predloc, preyloc):
 	return (mindistance(predloc[0],preyloc[0]),mindistance(predloc[1],preyloc[1]))
 
@@ -19,6 +20,7 @@ def valueIteration():
 	alldiffs = [ (x,y) for x in range(-5,6) for y in range(-5,6)]
 	alldiffs.remove((0,0))
 
+	# the relative positions vary from -5 up to 5, in both dimensions
 	values = {}
 	for x in range(-5,6):
 		for y in range(-5,6):
@@ -35,6 +37,8 @@ def valueIteration():
 		delta = 0
 		newValues = {}
 		for diff in alldiffs:
+			# we place the predator in the middle of the world,
+			# we are allowed to do this, since the positions are encoded relatively
 			predloc = (5,5)
 			preyloc = (predloc[0]+diff[0],predloc[1]+diff[1])
 			curKey  = rewriteStates(predloc,preyloc)
@@ -50,6 +54,7 @@ def valueIteration():
 					preySum += 10.0
 				else:
 					for preyProb, newPreyloc in prey.expand(newPredloc):
+						# using rewriteStates we use relative positions
 						preySum += preyProb * discountFactor * values[rewriteStates(newPredloc,newPreyloc)]
 				if bestVal <= preySum:
 					bestVal = preySum

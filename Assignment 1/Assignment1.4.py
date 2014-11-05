@@ -58,19 +58,24 @@ def valueIteration(discountFactor):
 		return bestMoves[(predloc,preyloc)]
 	return numIt, values, policy
 
+# compare iterations required for convergence 
 discountFactors = np.array([0.1,0.5,0.7,0.9])
 for discountFactor in discountFactors:
 	numIt, values,_ = valueIteration(discountFactor)	
 	print "For a discount factor of ", discountFactor, ", ", numIt, " iterations were required for convergence."
 
-values[((5,5),(5,5))]=10
 
+# this state can not be reached, (predator and prey share location)
+values[((5,5),(5,5))]=0
+
+# display all values for predator positions if prey has position (5,5)
 for y in range(11):
 	valueList = []
 	for x in range(11):
 		valueList.append(values[((x,y),(5,5))])
 	print valueList
 
+# time valueIteration for assignment 1.5
 start = time.time()
 _,_,policy=valueIteration(0.8)
 print "Time taken", round((time.time()-start)*10000)/100, "seconds"

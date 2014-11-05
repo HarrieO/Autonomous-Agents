@@ -5,6 +5,7 @@ import numpy as np
 		
 World(Prey(0,0), Agent(5,5)).run(worldPrint=True);
 
+# perform 100 runs and save the number of iterations in runs
 runs = np.array([0]*100)
 for i in range(100):
 	runs[i] = World(Prey(0,0), Agent(5,5)).run();

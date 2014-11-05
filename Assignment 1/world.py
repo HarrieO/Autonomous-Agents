@@ -5,7 +5,6 @@ class World(object):
 	def __init__(self, prey, predator, width=11, height=11):
 		self.width  	= width
 		self.height 	= height
-		#self.grid   	= [[None for x in range(width)] for y in range(height) ]
 		self.prey   	= prey
 		self.predator 	= predator
 
@@ -29,12 +28,13 @@ class World(object):
 			self.prey.printState()
 			print
 
-
+	# checks if the predator caught the prey
 	def stopState(self, move):
 		if self.prey.sameLocation(self.predator.locAfterMove(move)):
 			return True
 		return False
 
+	# performs a run, depending on the parameters the world and/or states are printed
 	def run(self, worldPrint=False, printStates=False):
 		
 		self.prettyPrint(worldPrint,printStates)

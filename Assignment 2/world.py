@@ -17,13 +17,21 @@ class World(object):
 
 	# list of all possible starting-states, (not the state where the predator is at the preys location)
 	def allStates(self):
-		return [(dx,dy) for dx in range(-(self.width-1)/2,(self.width-1)/2) \
-		                for dy in range(-(self.height-1)/2,(self.height-1)/2) \
+		return [(dx,dy) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
+		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
 		                if (dx,dy) != (0,0) ]
 
 	# returns true if predator is at the same location of the prey
 	def stopState(self):
 		return self.position == (0,0)
+
+	# returns element with given probabilities, list should be (elem, prob) pairs probs should sum to 1
+	def pickElementWithProbs(self, elemProbList):
+		pick = random.random()
+		for elem, prob in elemProbList:
+			if pick <= prob:
+				return elem
+			pick -= prob
 	
 	# torialdistance on a dimension given an absolute distance and the span of dimension in the world (width height)
 	def toroidaldis(self, distance, span):
@@ -64,9 +72,4 @@ class World(object):
 
 	# performs a random prey move according to probability distribution of preyMoves
 	def performPreyMove(self):
-		pick = random.random()
-		for state, prob in self.nextPreyStates():
-			if pick <= prob:
-				self.position = state
-				break
-			pick -= prob
+		self.position = self.pickElementWithProbs(self.nextPreyStates())

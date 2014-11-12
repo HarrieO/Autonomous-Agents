@@ -67,17 +67,18 @@ def Qlearning(episodes, initValue=15,epsilon=0.1, alpha=0.5,discount=0.1):
 		steps[i] = iterations
 	return steps
 
-aveSteps = np.zeros(1000)
-for i in range(200):
-	aveSteps += np.array(Qlearning(1000))
-aveSteps /= 200
+if __name__ == "__main__":
+	aveSteps = np.zeros(1000)
+	for i in range(200):
+		aveSteps += np.array(Qlearning(1000))
+	aveSteps /= 200
 
-t = arange(1, 501, 1)
-plot(t, aveSteps)
+	t = arange(1, 501, 1)
+	plot(t, aveSteps)
 
-xlabel('episodes')
-ylabel('Average steps per episode')
-title('Average steps per episode with Qlearning.')
-grid(True)
-savefig("Ass2.1.png")
-show()
+	xlabel('episodes')
+	ylabel('Average steps per episode')
+	title('Average steps per episode with Qlearning.')
+	grid(True)
+	savefig("Ass2.1.png")
+	show()

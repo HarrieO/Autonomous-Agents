@@ -66,19 +66,3 @@ def Qlearning(episodes, policy, initValue=15,epsilon=0.1, alpha=0.5,discount=0.1
 		# print the number of steps the predator took
 		steps[i] = iterations
 	return steps
-
-if __name__ == "__main__":
-	aveSteps = np.zeros(1000)
-	for i in range(20):
-		aveSteps += np.array(Qlearning(1000,epsGreedyPolicy))
-	aveSteps /= 20
-
-	t = range(1, aveSteps.shape[0]+1)
-	plot(t, aveSteps)
-
-	xlabel('episodes')
-	ylabel('Average steps per episode')
-	title('Average steps per episode with Q-learning.')
-	grid(True)
-	savefig("Ass2.1.png")
-	show()

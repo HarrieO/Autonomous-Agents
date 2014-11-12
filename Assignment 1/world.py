@@ -36,21 +36,18 @@ class World(object):
 
 	# performs a run, depending on the parameters the world and/or states are printed
 	def run(self, worldPrint=False, printStates=False):
-		
 		self.prettyPrint(worldPrint,printStates)
-
 		iterations = 0;
-		
+		# predators policy is uniformly random
 		predMove = self.predator.pickMove()
+		# stops if predator moves onto the prey
 		while not self.stopState(predMove):
 			self.predator.move(predMove)
+			# preys move which depends on the predators location
 			self.prey.move(self.prey.pickMove(self.predator.loc()))
 			predMove = self.predator.pickMove()
-
 			self.prettyPrint(worldPrint,printStates)
-
 			iterations += 1
-
 		if worldPrint or printStates:
 			print 
 			print "Finished after", iterations, "moves."

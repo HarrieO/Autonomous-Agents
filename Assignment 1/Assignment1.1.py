@@ -1,3 +1,9 @@
+'''
+Group 7
+Carla Groenland   10208429
+Harrie Oosterhuis 10196129
+Fabian Voorter    10218807
+'''
 from world    import World
 from prey     import Prey
 from agent    import Agent

@@ -6,7 +6,10 @@ import numpy as np
 epsilon = 0.01
 
 def evaluatePolicy(policy, discountFactor, values=None):
+	# all locations on the grid
 	alllocations = [ (x,y) for x in range(11) for y in range(11)]
+
+	# initialize values if None is given
 	if values is None:
 		values = {}
 	for predloc in alllocations:
@@ -15,23 +18,27 @@ def evaluatePolicy(policy, discountFactor, values=None):
 				values[(predloc,preyloc)] = 0
 	delta = 1
 	numIt = 0
+	# perform update values according to given pseudo-code
 	while delta > epsilon:
 		delta = 0
-		newValues = {}
+		newValues = {} # will be filled with new values
+		# loop over all states
 		for predloc in alllocations:
 			for preyloc in alllocations:
-				if predloc == preyloc:
+				if predloc == preyloc: # impossible state
 					continue
 				prey 	 = Prey(*preyloc)
 				temp = values[(predloc,preyloc)]
 				predMove = policy[(predloc,preyloc)]
+				# make move according to policy
 				newPredloc = ((predloc[0] + predMove[0])%11,(predloc[1] + predMove[1])%11)
 				preySum = 0
+				# calculate discounted sum
 				if newPredloc == preyloc :
-					preySum += 10.0
+					preySum += 10.0 # game ends after this
 				else:
 					for preyProb, newPreyloc in prey.expand(newPredloc):
-							preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
+						preySum += preyProb * discountFactor * values[(newPredloc,newPreyloc)]
 				newValues[(predloc,preyloc)] = preySum
 				delta = max(delta, np.abs(preySum - temp))
 		values = newValues
@@ -40,8 +47,10 @@ def evaluatePolicy(policy, discountFactor, values=None):
 
 def improvePolicy(policy,values, discountFactor):
 	stable = True
+	# all locations in the grid and all possible moves
 	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 	moves = [(0,0),(0,1),(0,-1),(1,0),(-1,0)]
+	# loop over possible states
 	for predloc in alllocations:
 		for preyloc in alllocations:
 			if predloc == preyloc:
@@ -50,6 +59,7 @@ def improvePolicy(policy,values, discountFactor):
 			oldPolicy = policy[(predloc,preyloc)]
 			bestPolicy = (0,0)
 			bestVal = 0
+			# calculate greedy policy according to values
 			for predMove in moves:
 				newPredloc = ((predloc[0] + predMove[0])%11,(predloc[1] + predMove[1])%11)
 				preySum = 0
@@ -62,6 +72,7 @@ def improvePolicy(policy,values, discountFactor):
 					bestVal = preySum
 					bestPolicy = predMove
 			policy[(predloc,preyloc)]=bestPolicy
+			# keep track of whether the policy is adjusted
 			if oldPolicy != bestPolicy:
 				stable = False
 	return policy, stable
@@ -76,6 +87,7 @@ def iterate_policy(discountFactor):
 	stable = False
 	values = None
 	numIt = 0
+	# update policy and values until the policy is unaltered
 	while not stable:
 		values, numItEval = evaluatePolicy(policy, discountFactor, values)
 		numIt += numItEval

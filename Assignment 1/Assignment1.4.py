@@ -5,9 +5,10 @@ import numpy as np
 import time
 
 def valueIteration(discountFactor):
-
+	# all locations in grid
 	alllocations = [ (x,y) for x in range(11) for y in range(11)]
 
+	# initialize values
 	values = {}
 	bestMoves = {}
 	for predloc in alllocations:
@@ -21,9 +22,11 @@ def valueIteration(discountFactor):
 	epsilon = 0.01
 	delta = 1
 	numIt = 0
+	# perform value iteration according to pseud-code
 	while delta > epsilon:
 		delta = 0
 		newValues = {}
+		# loop over all states
 		for predloc in alllocations:
 			for preyloc in alllocations:
 				if predloc == preyloc:
@@ -31,6 +34,7 @@ def valueIteration(discountFactor):
 				agent.setLocation(predloc)
 				prey = Prey(*preyloc)
 				temp = values[(predloc,preyloc)]
+				# find optimal value according to current values
 				bestVal = 0
 				bestMove = (0,0)
 				for prob, predMove in agent.getMoveList():
@@ -50,7 +54,7 @@ def valueIteration(discountFactor):
 		values = newValues
 		deltas.append(delta)
 		numIt+=1
-
+	# greedy policy to the optimal values computed above
 	def policy(state):
 		predloc, preyloc = state
 		agent.setLocation(predloc)

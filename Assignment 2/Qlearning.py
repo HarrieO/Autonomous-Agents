@@ -27,7 +27,7 @@ def epsGreedyPolicy(state, world, Q, epsilon):
 	
 	return action
 
-def Qlearning(episodes, policy, initValue=15,epsilon=0.1, alpha=0.5,discount=0.1):
+def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.1):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
@@ -45,8 +45,8 @@ def Qlearning(episodes, policy, initValue=15,epsilon=0.1, alpha=0.5,discount=0.1
 		world.setState((-5,-5))
 		while True:
 			state = world.position
-			# move the predator according to epsilon greedy policy
-			action = policy(state, world, Q, epsilon)
+			# move the predator according to policy with one parameter (epsilon for E-greedy or Tua for softmax)
+			action = policy(state, world, Q, policyParam)
 			world.move(action)
 			iterations += 1
 			# check if predator caught the prey

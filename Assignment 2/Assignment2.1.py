@@ -1,21 +1,7 @@
 from world import World 
 import random
 import numpy as np
-
-
-# world object, (starting state is trivial)
-world = World((0,0),(1,1))
-
-
-# epsilon used for epsilon greedy
-epsilon  = 0.1
-alpha    = 0.5
-discount = 0.1
-# Q value table
-Q = {}
-for state in world.allStates():
-	for move in world.moveList():
-		Q[state,move] = 15
+from pylab import *
 
 # returns list of indices with max values of list
 def maxIndices(valueActionList):
@@ -43,28 +29,55 @@ def epsGreedyPolicy(state, world, Q, epsilon):
 	
 	return action
 
+def Qlearning(episodes, initValue=15,epsilon=0.1, alpha=0.5,discount=0.1):
+	# world object, (starting state is trivial)
+	world = World((0,0),(1,1))
 
-for i in range(500):
-	iterations = 0
-	world.setState((-5,-5))#random.choice(startingStates))
-	
-	key = None
-	count = 0
-	check = {}
-	while True:
-		state = world.position
-		action = epsGreedyPolicy(state, world, Q, epsilon)
+	# Q value table
+	Q = {}
+	for state in world.allStates():
+		for move in world.moveList():
+			Q[state,move] = initValue
 
-		world.move(action)
-		if world.stopState():
-			Q[state,action] = Q[state,action] + alpha * (10 - Q[state,action])
-			print iterations
-			break
+	steps = [0]*episodes
 
-		world.performPreyMove()
-		newState = world.position
-		iterations += 1
-		maxQ = max([Q[newState,nextAction] for nextAction in world.moveList()])
-		Q[state,action] = Q[state,action] + alpha * ( discount*maxQ - Q[state,action])
+	for i in range(episodes):
+		iterations = 0
+		# initialize world
+		world.setState((-5,-5))
+		while True:
+			state = world.position
+			# move the predator according to epsilon greedy policy
+			action = epsGreedyPolicy(state, world, Q, epsilon)
+			world.move(action)
+			iterations += 1
+			# check if predator caught the prey
+			if world.stopState():
+				# the Q(s,a) update rule (note that the next state is the absorbing state)
+				Q[state,action] = Q[state,action] + alpha * (10 - Q[state,action])
+				break
+			# move the prey (stochasticly)
+			world.performPreyMove()
+			newState = world.position
+			# the maximum value the agent can have after another move
+			maxQ = max([Q[newState,nextAction] for nextAction in world.moveList()])
+			# the Q(s,a) update rule (note that the immediate reward is zero)
+			Q[state,action] = Q[state,action] + alpha * ( discount*maxQ - Q[state,action])
+		# print the number of steps the predator took
+		steps[i] = iterations
+	return steps
 
+aveSteps = np.zeros(1000)
+for i in range(200):
+	aveSteps += np.array(Qlearning(1000))
+aveSteps /= 200
 
+t = arange(1, 501, 1)
+plot(t, aveSteps)
+
+xlabel('episodes')
+ylabel('Average steps per episode')
+title('Average steps per episode with Qlearning.')
+grid(True)
+savefig("Ass2.1.png")
+show()

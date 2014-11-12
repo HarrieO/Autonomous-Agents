@@ -1,4 +1,4 @@
-from Assignment21 import *
+from Qlearning import *
 from world import World 
 import random
 import numpy as np
@@ -11,4 +11,4 @@ def softmaxPolicy(state, world, Q, tau):
 	# picks an action,value pair over given probability distribution
 	return world.pickElementWithProbs(zip(world.moveList(),probs))
 
-print Qlearning(10)
+print Qlearning(10, softmaxPolicy)

@@ -1,7 +1,5 @@
 from world import World 
 import random
-import numpy as np
-from pylab import *
 
 # returns list of indices with max values of list
 def maxIndices(valueActionList):

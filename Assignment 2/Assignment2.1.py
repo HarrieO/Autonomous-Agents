@@ -2,7 +2,7 @@ import Qlearning as Q
 import numpy as np
 from pylab import *
 
-runCount = 200
+runCount = 2
 for alpha in [0.1,0.2,0.3,0.4,0.5]:
 	for discount in [0.1,0.5,0.7,0.9]:
 		

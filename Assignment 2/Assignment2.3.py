@@ -1,14 +1,8 @@
-from Qlearning import *
 from world import World 
 import random
 import numpy as np
+import Qlearning as Q
 
-# picks an action according to the softmax policy
-def softmaxPolicy(state, world, Q, tau):
-	valuePerAction = np.array([np.exp(Q[state,move]/float(tau)) for move in world.moveList()])
-	totalSum = np.sum(valuePerAction)
-	probs = valuePerAction/totalSum 
-	# picks an action,value pair over given probability distribution
-	return world.pickElementWithProbs(zip(world.moveList(),probs))
 
-print Qlearning(10, softmaxPolicy)
+
+print Q.Qlearning(10, Q.softmaxPolicy)

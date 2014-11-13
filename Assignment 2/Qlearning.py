@@ -27,6 +27,14 @@ def epsGreedyPolicy(state, world, Q, epsilon):
 	
 	return action
 
+# picks an action according to the softmax policy
+def softmaxPolicy(state, world, Q, tau):
+	valuePerAction = np.array([np.exp(Q[state,move]/float(tau)) for move in world.moveList()])
+	totalSum = np.sum(valuePerAction)
+	probs = valuePerAction/totalSum 
+	# picks an action,value pair over given probability distribution
+	return world.pickElementWithProbs(zip(world.moveList(),probs))
+
 def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.1):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))

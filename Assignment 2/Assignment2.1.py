@@ -5,10 +5,10 @@ from policies import epsGreedyPolicy
 
 runCount = 50
 epiCount = 600
-for pli, alpha in enumerate([0.5,0.4,0.3,0.2,0.1]):
+for pli, alpha in enumerate([1,0.9,0.7,0.5,0.4,0.3,0.2,0.1]):
 	figure()
 	labels =[]
-	devs = np.zeros((4,epiCount))
+	devs = np.zeros((6,epiCount))
 	for di, discount in enumerate([0.9,0.7,0.5,0.1]):
 		
 		steps = np.zeros((runCount,epiCount))

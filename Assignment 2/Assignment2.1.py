@@ -3,7 +3,7 @@ from pylab import *
 from Qlearning import Qlearning
 from policies import epsGreedyPolicy
 
-runCount = 100
+runCount = 50
 epiCount = 600
 for pli, alpha in enumerate([1,0.9,0.7,0.5,0.4,0.3,0.2,0.1]):
 	figure()

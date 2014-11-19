@@ -1,6 +1,7 @@
-import Qlearning as Q
 import numpy as np
 from pylab import *
+from Qlearning import Qlearning
+from policies import epsGreedyPolicy
 
 runCount = 50
 epiCount = 600
@@ -13,7 +14,7 @@ for pli, alpha in enumerate([0.5,0.4,0.3,0.2,0.1]):
 		steps = np.zeros((runCount,epiCount))
 
 		for i in range(runCount):
-			steps[i,:] += np.array(Q.Qlearning(epiCount,Q.epsGreedyPolicy,alpha=alpha,discount=discount))
+			steps[i,:] += np.array(Qlearning(epiCount,epsGreedyPolicy,alpha=alpha,discount=discount))
 		
 		aveSteps = np.mean(steps, axis=0)
 		devs[di,:]= np.std(steps, axis=0)

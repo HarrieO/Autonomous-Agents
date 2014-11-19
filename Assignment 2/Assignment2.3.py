@@ -1,8 +1,9 @@
 from world import World 
 import random
 import numpy as np
-import Qlearning as Q
+from Qlearning import Qlearning
+from policies import softmaxPolicy
 
 
 
-print Q.Qlearning(10, Q.softmaxPolicy)
+print Qlearning(10, softmaxPolicy)

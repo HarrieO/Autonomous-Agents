@@ -27,15 +27,7 @@ def epsGreedyPolicy(state, world, Q, epsilon):
 	
 	return action
 
-# picks an action according to the softmax policy
-def softmaxPolicy(state, world, Q, tau):
-	valuePerAction = np.array([np.exp(Q[state,move]/float(tau)) for move in world.moveList()])
-	totalSum = np.sum(valuePerAction)
-	probs = valuePerAction/totalSum 
-	# picks an action,value pair over given probability distribution
-	return world.pickElementWithProbs(zip(world.moveList(),probs))
-
-def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.4,discount=0.9):
+def sarsa(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.1):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
@@ -51,11 +43,11 @@ def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.4,discount
 		iterations = 0
 		# initialize world
 		world.setState((-5,-5))
+		state = world.position
+		action = policy(state, world, Q, policyParam)
+		world.move(action)
+		state = world.position
 		while True:
-			state = world.position
-			# move the predator according to policy with one parameter (epsilon for E-greedy or Tua for softmax)
-			action = policy(state, world, Q, policyParam)
-			world.move(action)
 			iterations += 1
 			# check if predator caught the prey
 			if world.stopState():
@@ -65,10 +57,14 @@ def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.4,discount
 			# move the prey (stochasticly)
 			world.performPreyMove()
 			newState = world.position
-			# the maximum value the agent can have after another move
-			maxQ = max([Q[newState,nextAction] for nextAction in world.moveList()])
+			# move the predator according to policy with one parameter (epsilon for E-greedy or Tua for softmax)
+			newAction = policy(newState, world, Q, policyParam)
+			world.move(newAction)
+			newState = world.position
 			# the Q(s,a) update rule (note that the immediate reward is zero)
-			Q[state,action] = Q[state,action] + alpha * ( discount*maxQ - Q[state,action])
+			Q[state,action] = Q[state,action] + alpha * ( discount*Q[(newState,newAction)] - Q[state,action])
+			state = newState
+			action= newAction
 		# print the number of steps the predator took
 		steps[i] = iterations
 	return steps

@@ -2,17 +2,18 @@ import Qlearning as Q
 import numpy as np
 from pylab import *
 
-runCount = 1000
-for pli, alpha in enumerate([0.1,0.2,0.3,0.4,0.5]):
+runCount = 50
+epiCount = 600
+for pli, alpha in enumerate([0.5,0.4,0.3,0.2,0.1]):
 	figure()
 	labels =[]
-	devs = np.zeros((4,1000))
-	for di, discount in enumerate([0.1,0.5,0.7,0.9]):
+	devs = np.zeros((4,epiCount))
+	for di, discount in enumerate([0.9,0.7,0.5,0.1]):
 		
-		steps = np.zeros((runCount,1000))
+		steps = np.zeros((runCount,epiCount))
 
 		for i in range(runCount):
-			steps[i,:] += np.array(Q.Qlearning(1000,Q.epsGreedyPolicy,alpha=alpha,discount=discount))
+			steps[i,:] += np.array(Q.Qlearning(epiCount,Q.epsGreedyPolicy,alpha=alpha,discount=discount))
 		
 		aveSteps = np.mean(steps, axis=0)
 		devs[di,:]= np.std(steps, axis=0)
@@ -23,7 +24,7 @@ for pli, alpha in enumerate([0.1,0.2,0.3,0.4,0.5]):
 
 
 
-
+	ylim(0,300)
 	plt.legend(labels)
 	xlabel('episodes')
 	ylabel('Average steps per episode')
@@ -37,6 +38,7 @@ for pli, alpha in enumerate([0.1,0.2,0.3,0.4,0.5]):
 	for i in range(4):
 		plot(t, devs[i,:])
 
+	ylim(0,300)
 	plt.legend(labels)
 	xlabel('episodes')
 	ylabel('Average steps per episode')

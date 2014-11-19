@@ -1,5 +1,6 @@
 from world import World 
 import random
+import numpy as np
 
 # returns list of indices with max values of list
 def maxIndices(valueActionList):
@@ -24,51 +25,47 @@ def epsGreedyPolicy(state, world, Q, epsilon):
 
 	# picks an action,value pair over given probability distribution
 	_,action = world.pickElementWithProbs(zip(valuePerAction,probs))
-	
 	return action
 
-# picks an action according to the softmax policy
-def softmaxPolicy(state, world, Q, tau):
-	valuePerAction = np.array([np.exp(Q[state,move]/float(tau)) for move in world.moveList()])
-	totalSum = np.sum(valuePerAction)
-	probs = valuePerAction/totalSum 
-	# picks an action,value pair over given probability distribution
-	return world.pickElementWithProbs(zip(world.moveList(),probs))
-
-def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.4,discount=0.9):
+def MCoff(episodes, initValue=0.0,epsilon=0.1, alpha=0.5,discount=0.1):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
-	# Q value table
+	# initialize Q value table and Return list for every (s,a)-pair
 	Q = {}
+	R = {}
+	num = {}
+	denum = {} 
 	for state in world.allStates():
 		for move in world.moveList():
-			Q[state,move] = initValue
-
-	steps = [0]*episodes
+			num[state,move] = 0
+			denum[state,move] = 0
+			Q[state,move] = initValue # some value
+			R[state,move] = [] # empty list; return = cummulative discounted reward
+	steps = [0]*episodes # list counting number of iterations
+	Qinit = dict(Q)
 
 	for i in range(episodes):
 		iterations = 0
 		# initialize world
 		world.setState((-5,-5))
+		stateActionPairs = {}
+		# generate an episode using fixed policy
 		while True:
 			state = world.position
-			# move the predator according to policy with one parameter (epsilon for E-greedy or Tua for softmax)
-			action = policy(state, world, Q, policyParam)
+			# move the predator according to policy
+			action = epsGreedyPolicy(state, world, Qinit, epsilon)
 			world.move(action)
+			if not (state,action) in stateActionPairs: # store first occurence
+				stateActionPairs[(state,action)] = iterations # will be used for discounting
 			iterations += 1
 			# check if predator caught the prey
 			if world.stopState():
-				# the Q(s,a) update rule (note that the next state is the absorbing state)
-				Q[state,action] = Q[state,action] + alpha * (10 - Q[state,action])
 				break
 			# move the prey (stochasticly)
 			world.performPreyMove()
 			newState = world.position
-			# the maximum value the agent can have after another move
-			maxQ = max([Q[newState,nextAction] for nextAction in world.moveList()])
-			# the Q(s,a) update rule (note that the immediate reward is zero)
-			Q[state,action] = Q[state,action] + alpha * ( discount*maxQ - Q[state,action])
-		# print the number of steps the predator took
-		steps[i] = iterations
+		steps[i] = iterations # save amount of iterations needed to catch the prey
+		# update Q,N,D
+		for pair in stateActionPairs.keys():
 	return steps

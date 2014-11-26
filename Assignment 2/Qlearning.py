@@ -1,6 +1,6 @@
 from world import World 
 
-def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.4,discount=0.9):
+def Qlearning(episodes, policy, startState=(-5,-5), initValue=15,policyParam=0.1, alpha=0.4,discount=0.9):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
@@ -15,7 +15,7 @@ def Qlearning(episodes, policy, initValue=15,policyParam=0.1, alpha=0.4,discount
 	for i in range(episodes):
 		iterations = 0
 		# initialize world
-		world.setState((-5,-5))
+		world.setState(startState)
 		while True:
 			state = world.position
 			# move the predator according to policy with one parameter (epsilon for E-greedy or Tua for softmax)

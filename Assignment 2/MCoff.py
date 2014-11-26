@@ -1,12 +1,22 @@
 from world import World 
 from policies import epsGreedyPolicy, maxIndices
+import numpy as np
+import random
 
-def MCoff(episodes, behaviorPolicy, policyProb,initValue=0.0,epsilon=0.1, alpha=0.5,discount=0.1):
-	# policyProb = dictionary with keys (state,action) and value P(action|state)
+def MCoff(episodes, behaPolicy=None, initValue=15,discount=0.9):
+	# behaPolicy = dictionary with keys (state,action) and value P(action|state)
 
-	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
+	movelist = world.moveList()
+	behaPolicy = {}
+	for state in world.allStates():
+		for move in movelist:
+			behaPolicy[(state, move)] = 1.0/len(movelist)
+	def policy(world):
+		return world.pickElementWithProbs([(move,behaPolicy[(world.position,move)]) for move in movelist])
+
+	ourPolicy = {}
 	# initialize Q value table and Return list for every (s,a)-pair
 	Q = {}
 	R = {}
@@ -18,48 +28,54 @@ def MCoff(episodes, behaviorPolicy, policyProb,initValue=0.0,epsilon=0.1, alpha=
 			denum[state,move] = 0.0
 			Q[state,move] = float(initValue) # some value
 			R[state,move] = [] # empty list; return = cummulative discounted reward
+			ourPolicy[state] = move
 	steps = [0]*episodes # list counting number of iterations
 
-	for i in range(episodes):
+	for epi in range(episodes):
 		time = 0
 		totalTime =0
 		# initialize world
 		world.setState((-5,-5))
-		stateActionPairs = {}
-		# generate an episode using fixed policy
-		history = {} # save history
-		historyAll = [] # all history from tau forwards
+		
+		episode = []
 		while True:
-			state = world.position
-			# move the predator according to policy
-			action = behaviorPolicy(state, world, Qinit, epsilon)
+			action = policy(world)
+			episode.append((world.position, action))
 			world.move(action)
-			actionValues = [(maction, Q(state,maction)) for maction in world.moveList()]
-			bestAction = actionValues[maxIndices(actionValues)[0]][0]
-			if action != bestAction:
-				history = {} # forget history
-				historyAll = []
-			historyAll.append((state,action))
-			if not (state,action) in history: # store first occurence
-				history[(state,action)] = totalTime # will be used for discounting
-			# check if predator caught the prey
 			if world.stopState():
 				break
-			# move the prey (stochasticly)
-			world.performPreyMove()
-			newState = world.position
-			totalTime+=1
-		steps[i] = totalTime # save amount of iterations needed to catch the prey
-		# compute mu's 
-		mu = np.zeros(len(historyAll))
-		for t in range(len(historyAll)):
-			mu[t]=policyProb[historyAll[t]]
-		mu = 1.0/mu
-		# update Q,N,D
-		for (state,move) in history.keys():
-			t = history[(state,move)] # first occurence time 
-			W = np.prod(1.0/mu[t-totalTime:])
-			num[(state,move)]+= float(W* (10.0*discount**(totalTime-time))) # return is gamma^{T-t}*10
-			denum[(state,move)]+= float(W)
-			Q[(state,move)]= float(W*Gt)/float(W)
+			else:
+				world.performPreyMove()
+
+		# save the pairs that match, and their first occurence
+		matchingHistory = {}
+		# last time move was equal to policy
+		last = 0
+		for i, (state, action) in enumerate(episode[::-1]):
+			actionValues = [(maction, Q[state,maction]) for maction in world.moveList()]
+			bestActions = [actionValues[j][0] for j in maxIndices(actionValues)]
+			if action not in bestActions:
+				last = len(episode)-i
+				break
+			matchingHistory[(state, action)] = len(episode)-i - 1
+
+		for (state, action) in matchingHistory:
+			w = np.prod([ 1.0/behaPolicy[episode[j]] for j in range(matchingHistory[(state, action)],len(episode))])
+			num[(state,move)]  +=  w* (10.0*discount**matchingHistory[(state, action)]) # return is gamma^{T-t}*10
+			denum[(state,move)]+= w
+			Q[(state,move)]= num[(state,move)]/float(denum[(state,move)])
+
+		iterations = 0
+		while True:
+			iterations += 1
+			actionValues = [(maction, Q[state,maction]) for maction in world.moveList()]
+			bestAction = random.choice([actionValues[j][0] for j in maxIndices(actionValues)])
+			world.move(bestAction)
+			if world.stopState():
+				break
+			else:
+				world.performPreyMove()
+		steps[epi] = iterations
+		
+			
 	return steps

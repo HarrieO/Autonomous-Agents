@@ -1,8 +1,9 @@
 from world import World 
 from policies import epsGreedyPolicy
+import numpy as np
 
 
-def MCon(episodes, initValue=0.0,epsilon=0.1, alpha=0.5,discount=0.1):
+def MCon(episodes, initValue=15,epsilon=0.1, alpha=0.5,discount=0.9):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
@@ -38,7 +39,7 @@ def MCon(episodes, initValue=0.0,epsilon=0.1, alpha=0.5,discount=0.1):
 		steps[i] = iterations # save amount of iterations needed to catch the prey
 		# update Q and R
 		for pair in stateActionPairs.keys():
-			firstReturn = 10.0*discount**stateActionPairs[pair] # always zero but 10 when episode ends
+			firstReturn = 10.0*discount**(iterations-stateActionPairs[pair]) # always zero but 10 when episode ends
 			R[pair].append(firstReturn)
 			Q[pair] = np.mean(np.array(R[pair]))
 		# update policy done in epsilon greedy policy code

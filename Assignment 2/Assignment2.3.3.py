@@ -84,7 +84,7 @@ for di, temperature in enumerate([0.1,0.5,0.9]):
 	optim = np.zeros((runCount,epiCount))
 	for i in range(runCount):
 		oc = OptimalCheck(softmaxPolicy)
-		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,policyParam=temperature,initValue=5))
+		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,alpha=0.1,policyParam=temperature,initValue=5))
 		optim[i,:] = np.array([ sum(actlist)/float(len(actlist)) for actlist in oc.allList])
 		
 	aveSteps = np.mean(steps, axis=0)
@@ -103,7 +103,7 @@ for di, epsilon in enumerate([0.1,0.3,0.5]):
 	optim = np.zeros((runCount,epiCount))
 	for i in range(runCount):
 		oc = OptimalCheck(epsGreedyPolicy)
-		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,policyParam=epsilon,initValue=5))
+		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,alpha=0.1,policyParam=epsilon,initValue=5))
 		optim[i,:] = np.array([ sum(actlist)/float(len(actlist)) for actlist in oc.allList])
 	
 	aveSteps = np.mean(steps, axis=0)

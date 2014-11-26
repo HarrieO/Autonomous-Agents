@@ -1,12 +1,12 @@
 from world import World 
 
-def sarsa(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.1):
+def sarsa(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.9):
 	# world object, (starting state is trivial)
 	world = World((0,0),(1,1))
 
 	# Q value table
 	Q = {}
-	for state in world.allStates():
+	for state in world.allStates() + [(0,0)]:
 		for move in world.moveList():
 			Q[state,move] = initValue
 
@@ -18,10 +18,9 @@ def sarsa(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.1
 		world.setState((-5,-5))
 		state = world.position
 		action = policy(state, world, Q, policyParam)
-		world.move(action)
-		state = world.position
 		while True:
 			iterations += 1
+			world.move(action)
 			# check if predator caught the prey
 			if world.stopState():
 				# the Q(s,a) update rule (note that the next state is the absorbing state)
@@ -32,8 +31,6 @@ def sarsa(episodes, policy, initValue=15,policyParam=0.1, alpha=0.5,discount=0.1
 			newState = world.position
 			# move the predator according to policy with one parameter (epsilon for E-greedy or Tua for softmax)
 			newAction = policy(newState, world, Q, policyParam)
-			world.move(newAction)
-			newState = world.position
 			# the Q(s,a) update rule (note that the immediate reward is zero)
 			Q[state,action] = Q[state,action] + alpha * ( discount*Q[(newState,newAction)] - Q[state,action])
 			state = newState

@@ -1,5 +1,4 @@
 from world import World 
-import random
 import numpy as np
 from Qlearning import Qlearning
 from policies import softmaxPolicy, epsGreedyPolicy, maxIndices
@@ -74,6 +73,11 @@ class OptimalCheck(object):
 		return action
 
 
+world = World((0,0),(1,1))
+allStates = world.allStates()
+
+import random
+
 figure()
 ylim(0,100)
 labels =[]
@@ -84,7 +88,8 @@ for di, temperature in enumerate([0.1,0.5,0.9]):
 	optim = np.zeros((runCount,epiCount))
 	for i in range(runCount):
 		oc = OptimalCheck(softmaxPolicy)
-		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,policyParam=temperature,initValue=5))
+		start = random.choice(allStates)
+		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,startState=start,policyParam=temperature,initValue=5))
 		optim[i,:] = np.array([ sum(actlist)/float(len(actlist)) for actlist in oc.allList])
 		
 	aveSteps = np.mean(steps, axis=0)
@@ -103,6 +108,7 @@ for di, epsilon in enumerate([0.1,0.3,0.5]):
 	optim = np.zeros((runCount,epiCount))
 	for i in range(runCount):
 		oc = OptimalCheck(epsGreedyPolicy)
+		start = random.choice(allStates)
 		steps[i,:] = np.array(Qlearning(epiCount,oc.policy,policyParam=epsilon,initValue=5))
 		optim[i,:] = np.array([ sum(actlist)/float(len(actlist)) for actlist in oc.allList])
 	
@@ -124,9 +130,9 @@ xlabel('episodes')
 ylabel('Average steps per episode')
 title(r'Average steps per episode with Q-learning with softmax-policy.')
 grid(True)
-savefig("plots/steps2.3.1.png")
+savefig("plots/randomStartSteps2.3.1.png")
 xlim(0,100)
-savefig("plots/steps2.3.2.png")
+savefig("plots/randomStartSteps2.3.4.png")
 close()
 
 figure()
@@ -137,10 +143,8 @@ for i in range(len(optimList)):
 ylim(0,1)
 plt.legend(labels, loc='lower right')
 xlabel('episodes')
-# ylabel('Mean fraction of optimal action')
-# title(r'Mean fraction of optimal action per episode with Q-learning.')
 ylabel('Percentage of optimal action taken')
 title(r'Percentage of optimal action taken per episode with Q-learning.')
 grid(True)
-savefig("plots/opt2.3.png")
+savefig("plots/randomStartOptprop2.3.5.png")
 close()

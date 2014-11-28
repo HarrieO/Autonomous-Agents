@@ -32,6 +32,7 @@ class World(object):
 			if pick <= prob:
 				return elem
 			pick -= prob
+		return elemProbList[-1][0]
 	
 	# torialdistance on a dimension given an absolute distance and the span of dimension in the world (width height)
 	def toroidaldis(self, distance, span):

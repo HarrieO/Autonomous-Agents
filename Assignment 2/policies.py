@@ -5,7 +5,7 @@ def maxIndices(valueActionList):
 	maxv    = None
 	indices = []
 	for i, (value, action) in enumerate(valueActionList):
-		if not maxv or value > maxv:
+		if (not maxv) or value > maxv:
 			indices = [i]
 			maxv = value
 		elif value == maxv:

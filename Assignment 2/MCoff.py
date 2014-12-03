@@ -46,17 +46,18 @@ def MCoff(episodes, behaPolicy, matches=[], initValue=15,discount=0.9):
 		# last time move was equal to policy
 		last = 0
 		for i, (state, action) in enumerate(episode[::-1]):
-			actionValues = [(maction, Q[state,maction]) for maction in world.moveList()]
-			bestActions = [actionValues[j][0] for j in maxIndices(actionValues)]
+			actionValues = [(Q[state,maction],maction) for maction in world.moveList()]
+			bestActions = [actionValues[j][1] for j in maxIndices(actionValues)]
+			matchingHistory[(state, action)] = len(episode)-i - 1
 			if action not in bestActions:
 				last = len(episode)-i
 				break
-			matchingHistory[(state, action)] = len(episode)-i - 1
+			
 		
 		matches.append(len(episode)-last)
 		
 		for (state, action) in matchingHistory:
-			if matchingHistory[(state, action)] >= last:
+			if matchingHistory[(state, action)] >= last-1:
 				w = np.prod([ 1.0/behaPolicy[episode[j]] for j in range(matchingHistory[(state, action)],len(episode))])
 				num[(state,move)]   += w * (10.0*discount**matchingHistory[(state, action)]) # return is gamma^{T-t}*10
 				denum[(state,move)] += w

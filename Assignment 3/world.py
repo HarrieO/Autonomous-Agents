@@ -5,25 +5,65 @@ class World(object):
 		self.width  	= width
 		self.height 	= height
 		# position is the relative distance between predator and prey
-		self.position  	= tuple(self.relativedist(predLoc[0]-preyLoc[0],predLoc[1]-preyLoc[1]) for predLoc in predatorLocs)
+		self.position  	= tuple(sorted(
+							tuple(self.relativedist(predLoc[0]-preyLoc[0],predLoc[1]-preyLoc[1]) for predLoc in predatorLocs)
+						  ))
+		self.no_predator = len(self.position)
+		self.singleStates = [((dx,dy)) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
+		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
+		                if (dx,dy) != (0,0) ]
+		self.singleStates = [((dx,dy)) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
+		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
+		                if (dx,dy) != (0,0) ]
+		self.statePairs = None
+		self.allMoves   = None
+
 
 	# sets state of world to relative position
 	def setState(self, position):
-		self.position = position
+		self.position = tuple(sorted(position))
 
 	# list of all potential moves
-	def moveList(self):
+	def singleMoveList(self):
 		return [(0,0),(0,-1),(0,1),(1,0),(-1,0)]
+
+	def allMoveList(self):
+		if not self.allMoves:
+			singleMoveList = self.singleMoveList()
+			movePairs = [(move,) for move in singleMoveList]
+			for _ in range(len(self.position)-1):
+				newMovePairs = []
+				for move in singleMoveList:
+					for pair in movePairs:
+						newMovePairs.append(pair + (move,))
+				movePairs = newMovePairs[:]
+			self.allMoves = movePairs
+		return self.allMoves
+
 
 	# list of all possible starting-states, (not the state where the predator is at the preys location)
 	def allStates(self):
-		return [(dx,dy) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
-		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
-		                if (dx,dy) != (0,0) ]
+		if not self.statePairs:
+			statePairs = [(state,) for state in self.singleStates]
+			for _ in range(len(self.position)-1):
+				newStatePairs = []
+				for state in self.singleStates:
+					for statePair in statePairs:
+						if state not in statePair:
+							newStatePairs.append(statePair + (state,))
+				#print newStatePairs
+				statePairs = newStatePairs[:]
+			self.statePairs = statePairs
+		return self.statePairs
 
 	# returns true if predator is at the same location of the prey
 	def stopState(self):
-		return self.position == (0,0)
+		if (0,0) in self.position:
+			return True
+		for i, state in enumerate(self.position[:-1]):
+			if state in self.position[i+1:]:
+				return True
+		return False
 
 	# returns element with given probabilities, list should be (elem, prob) pairs probs should sum to 1
 	def pickElementWithProbs(self, elemProbList):
@@ -43,34 +83,30 @@ class World(object):
 		return self.toroidaldis(dx,self.width),self.toroidaldis(dy,self.height)
 
 	# relative position after given move, (move performed by predator)
-	def posAfterMove(self, move):
-		return self.relativedist(self.position[0] + move[0],self.position[1] + move[1])
+	def posAfterMove(self, moves):
+		return tuple(sorted(
+			tuple(self.relativedist(self.position[i][0] + moves[i][0],self.position[i][1] + moves[i][1]) for i in range(self.no_predator))
+			))
 
 	# moves the predator (move is a tuple (dx,dy))
-	def move(self, move):
-		self.position = self.posAfterMove(move)
+	def move(self, preymove, predmoves):
+		self.position = self.posAfterMove(predmoves)
+		if random.random() > 0.2:
+			self.preyMove(preymove)
+		return self.reward()
+
+	def reward(self):
+		for i, state in enumerate(self.position[:-1]):
+			if state in self.position[i+1:]:
+				return (10,-10)
+		if (0,0) in self.position:
+			return (-10,10)
+		return (0,0)
 
 	# relative position after prey moves
 	def posAfterPreyMove(self, move):
-		return self.posAfterMove((-move[0],-move[1]))
+		return self.posAfterMove(((-move[0],-move[1]),)*self.no_predator)
 
 	# moves the prey (move is a tuple (dx,dy))
 	def preyMove(self, move):
 		self.position = self.posAfterPreyMove(move)
-
-	# return list of moves the prey can make, and a list of probabilities of each move
-	def preyMoves(self):
-		moveList = [(0,-1),(0,1),(1,0),(-1,0)]
-		for i, move in enumerate(moveList):
-			if self.posAfterPreyMove(move) == (0,0):
-				del moveList[i]
-		probs = [0.2/len(moveList)]*len(moveList)
-		return zip([(0,0)] + moveList, [0.8] + probs)
-
-	# list of states after preymove with each probability
-	def nextPreyStates(self):
-		return [(self.posAfterPreyMove(move), prob) for move, prob in self.preyMoves()]
-
-	# performs a random prey move according to probability distribution of preyMoves
-	def performPreyMove(self):
-		self.position = self.pickElementWithProbs(self.nextPreyStates())

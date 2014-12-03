@@ -7,6 +7,15 @@ class World(object):
 		# position is the relative distance between predator and prey
 		self.position  	= tuple(self.relativedist(predLoc[0]-preyLoc[0],predLoc[1]-preyLoc[1]) for predLoc in predatorLocs)
 
+		self.singleStates = [((dx,dy)) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
+		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
+		                if (dx,dy) != (0,0) ]
+		self.singleStates = [((dx,dy)) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
+		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
+		                if (dx,dy) != (0,0) ]
+		self.statePairs = None
+
+
 	# sets state of world to relative position
 	def setState(self, position):
 		self.position = position
@@ -17,13 +26,27 @@ class World(object):
 
 	# list of all possible starting-states, (not the state where the predator is at the preys location)
 	def allStates(self):
-		return [(dx,dy) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
-		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
-		                if (dx,dy) != (0,0) ]
+		if not self.statePairs:
+			statePairs = [(state,) for state in self.singleStates]
+			for i in range(len(self.position)-1):
+				newStatePairs = []
+				for state in self.singleStates:
+					for statePair in statePairs:
+						if state not in statePairs:
+							newStatePairs.append(statePair + (state,))
+				#print newStatePairs
+				statePairs = newStatePairs[:]
+			self.statePairs = statePairs
+		return self.statePairs
 
 	# returns true if predator is at the same location of the prey
 	def stopState(self):
-		return self.position == (0,0)
+		if (0,0) in self.position:
+			return True
+		for i, state in enumerate(self.position):
+			if state in self.position[i:]:
+				return True
+		return False
 
 	# returns element with given probabilities, list should be (elem, prob) pairs probs should sum to 1
 	def pickElementWithProbs(self, elemProbList):

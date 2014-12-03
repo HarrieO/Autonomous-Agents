@@ -98,10 +98,10 @@ class World(object):
 	def reward(self):
 		for i, state in enumerate(self.position[:-1]):
 			if state in self.position[i+1:]:
-				return (10,(-10,)*self.no_predator)
+				return (10,-10)
 		if (0,0) in self.position:
-			return (-10,(10,)*self.no_predator)
-		return (0,(0,)*self.no_predator)
+			return (-10,10)
+		return (0,0)
 
 	# relative position after prey moves
 	def posAfterPreyMove(self, move):

@@ -31,8 +31,8 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
 		while True:
 			state = world.position
 			# choose action
-			action_pred = minimax_policy(epsilon, pi_pred, state)
-			action_prey = minimax_policy(epsilon, pi_prey, state)
+			action_pred = minimax_policy(epsilon, pi_pred, state, world.allMoveList())
+			action_prey = minimax_policy(epsilon, pi_prey, state, world.singleMoveList())
 			reward = world.move(action_prey,action_pred)
 			iterations +=1
 			# update Q

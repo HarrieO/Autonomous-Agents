@@ -4,7 +4,7 @@ import pylab as plt
 
 #world = World((5,5),[(10,0),(0,10),(0,0),(10,10)])
 
-predatorLocations = [(0,0),(10,10),(10,0),(0,10)]
+predatorLocations = [(0,0)]
 
 episodes = 10000
 steps, rewards = Qlearning(episodes, predatorLocations, epsGreedyPolicy)

@@ -15,9 +15,6 @@ def Qlearning(episodes, initialState,policy):
     Q_pred = {}
     Q_prey = {}
 
-    plt.figure()
-    plt.ion()
-    plt.show()
 
     steps = [0]*episodes
     rewards = [0]*episodes
@@ -56,8 +53,5 @@ def Qlearning(episodes, initialState,policy):
         steps[i]   = iterations
         if reward[1] > 0:
             rewards[i] = 1
-            plt.scatter(i,rewards[i])
-            if i < 100 or i % 10 == 0:
-                plt.draw()
-    plt.close()
+
     return steps, rewards

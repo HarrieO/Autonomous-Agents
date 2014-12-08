@@ -88,7 +88,7 @@ class World(object):
 			tuple(self.relativedist(self.position[i][0] + moves[i][0],self.position[i][1] + moves[i][1]) for i in range(self.no_predator))
 			))
 
-	# moves the predator (move is a tuple (dx,dy))
+	# moves the predator and the prey (tuples (dx,dy))
 	def move(self, preymove, predmoves):
 		self.position = self.posAfterMove(predmoves)
 		if random.random() > 0.2:

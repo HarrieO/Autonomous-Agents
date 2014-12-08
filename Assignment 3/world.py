@@ -12,9 +12,6 @@ class World(object):
 		self.singleStates = [((dx,dy)) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
 		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
 		                if (dx,dy) != (0,0) ]
-		self.singleStates = [((dx,dy)) for dx in range(-(self.width-1)/2,(self.width-1)/2+1) \
-		                for dy in range(-(self.height-1)/2,(self.height-1)/2+1) \
-		                if (dx,dy) != (0,0) ]
 		self.statePairs = None
 		self.allMoves   = None
 
@@ -42,6 +39,9 @@ class World(object):
 
 
 	# list of all possible starting-states, (not the state where the predator is at the preys location)
+	####
+	# To do: can this be done more efficiently using that the predators are sorted?
+	####
 	def allStates(self):
 		if not self.statePairs:
 			statePairs = [(state,) for state in self.singleStates]
@@ -56,7 +56,7 @@ class World(object):
 			self.statePairs = statePairs
 		return self.statePairs
 
-	# returns true if predator is at the same location of the prey
+	# returns true if predator is at the same location of the prey or another predator
 	def stopState(self):
 		if (0,0) in self.position:
 			return True

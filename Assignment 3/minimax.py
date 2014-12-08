@@ -1,10 +1,7 @@
 import numpy as np 
 import world
 import policies
-
-def minimax_policy(epsilon,values, state):
-	probabilities = [(action,epsilon+(1.0-epsilon)*values[(state,action)]) for action in actions]
-	return pickElementWithProbs
+from cvxopt import matrix, solvers
 
 def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
 	# initialization might be too expansive
@@ -26,23 +23,23 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
 	# 	for action in prey_move:
 	# 		pi_pred[(state,action)]=1.0/num_actions
 	steps = [0]*episodes
-    rewards = [0]*episodes
-    for i in range(episodes):
+	rewards = [0]*episodes
+	for i in range(episodes):
 		# initialize world
-	    world = World((5,5),initialState)
-    	iterations =0
+		world = World((5,5),initialState)
+		iterations =0
 		while True:
-	    	state = world.position
+			state = world.position
 			# choose action
 			action_pred = minimax_policy(epsilon, pi_pred, state)
 			action_prey = minimax_policy(epsilon, pi_prey, state)
 			reward = world.move(action_prey,action_pred)
 			iterations +=1
 			# update Q
-            if (state,action_prey not in Q_prey:
-                Q_prey[state,action_prey] = initValue
-            if (state,action_pred) not in Q_pred:
-                Q_pred[state,action_pred] = initValue
+			if (state,action_prey) not in Q_prey:
+				Q_prey[state,action_prey] = initValue
+			if (state,action_pred) not in Q_pred:
+				Q_pred[state,action_pred] = initValue
 			Q_pred[(state,action_pred,action_prey)] = (1.0-alpha)*Q_pred[(state,action_pred,action_prey)] + alpha*(reward[1]+ gamma* V_pred[new_state])
 			Q_prey[(state,action_prey,action_pred)] = (1.0-alpha)*Q_prey[(state,action_prey,action_pred)] + alpha*(reward[0]+ gamma* V_prey[new_state])
 			# update pi

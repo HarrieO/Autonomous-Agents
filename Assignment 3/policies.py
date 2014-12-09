@@ -41,3 +41,13 @@ def softmaxPolicy(state, moveList, Q, tau):
 	probs = valuePerAction/totalSum 
 	# picks an action,value pair over given probability distribution
 	return pickElementWithProbs(zip(world.moveList(),probs))
+
+# hybrid between softmax and epsilon-greedy
+def minimax_policy(epsilon,values, state, actions):
+	probabilities = [(action,epsilon+(1.0-epsilon)*values[(state,action)]) for action in actions]
+	return pickElementWithProbs
+
+# selects action according to given probabilities
+def greedy_policy(values, state, actions):
+	probabilities = [(action,values[(state,action)]) for action in actions]
+	return pickElementWithProbs

@@ -39,9 +39,6 @@ class World(object):
 
 
 	# list of all possible starting-states, (not the state where the predator is at the preys location)
-	####
-	# To do: can this be done more efficiently using that the predators are sorted?
-	####
 	def allStates(self):
 		if not self.statePairs:
 			statePairs = [(state,) for state in self.singleStates]
@@ -49,7 +46,8 @@ class World(object):
 				newStatePairs = []
 				for state in self.singleStates:
 					for statePair in statePairs:
-						if state not in statePair:
+						# this restriction makes use of the sort trick for state reduction
+						if all([prevs < state for prevs in statePair]):
 							newStatePairs.append(statePair + (state,))
 				#print newStatePairs
 				statePairs = newStatePairs[:]

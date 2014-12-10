@@ -1,6 +1,6 @@
 import numpy as np 
-import world
-import policies
+from world import World
+from policies import *
 from cvxopt import matrix, solvers
 
 def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
@@ -13,23 +13,23 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
     pi_prey = dict()
     initValue = 1.0
     # initialisation
-    world = World((5,5),initialState)
+    world = World((5,5),initial_state)
     for state in world.allStates():
       V_pred[state] = 1.0
       V_prey[state] = 1.0
       for action in world.allMoveList():
-          pi_pred[(state,action)]=1.0/num_actions
-          for opponent_move in opponent_moves:
+          pi_pred[(state,action)]=1.0/len(world.allMoveList())
+          for prey_move in world.singleMoveList():
               Q_pred[(state,action, prey_move)]=1.0
-              Q_prey[(state,opponent_move,action)]=1.0
+              Q_prey[(state,prey_move,action)]=1.0
       for action in world.singleMoveList():
-          pi_pred[(state,action)]=1.0/num_actions
+          pi_prey[(state,action)]=1.0/len(world.singleMoveList())
 
     steps = [0]*episodes
     rewards = [0]*episodes
     for i in range(episodes):
         # initialize world
-        world = World((5,5),initialState)
+        world = World((5,5),initial_state)
         # maxQ[s] stores the action that maximises Q(s,a)
         maxQ_prey = {}
         maxQ_pred = {}
@@ -39,7 +39,8 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
             # choose action
             action_pred = minimax_policy(epsilon, pi_pred, state, world.allMoveList())
             action_prey = minimax_policy(epsilon, pi_prey, state, world.singleMoveList())
-            reward = world.move(action_prey,action_pred)
+            print action_prey, action_pred
+            reward = world.move(action_prey,(action_pred,))
             iterations +=1
             # update Q
             # if (state,action_prey) not in Q_prey:

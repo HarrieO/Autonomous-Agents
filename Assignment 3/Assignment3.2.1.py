@@ -9,7 +9,7 @@ pl.ylabel('Prey caught ratio')
 pl.xlabel('Episodes')
 predatorLocations = [(0,0),(10,0),(0,10),(10,10)]
 episodes = 10000
-runs = 200
+runs = 300
 labels = []
 avesteps = np.zeros((4,episodes))
 avestepscatch = np.zeros((4,episodes))

@@ -12,16 +12,19 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
     pi_pred = dict()
     pi_prey = dict()
     initValue = 1.0
-    # for state in states:
-    #   V_pred[state] = 1.0
-    #   V_prey[state] = 1.0
-    #   for action in predator_moves:
-    #       pi_pred[(state,action)]=1.0/num_actions
-    #       for opponent_move in opponent_moves:
-    #           Q_pred[(state,action, prey_move)]=1.0
-    #           Q_prey[(state,opponent_move,action)]=1.0
-    #   for action in prey_move:
-    #       pi_pred[(state,action)]=1.0/num_actions
+    # initialisation
+    world = World((5,5),initialState)
+    for state in world.allStates():
+      V_pred[state] = 1.0
+      V_prey[state] = 1.0
+      for action in world.allMoveList():
+          pi_pred[(state,action)]=1.0/num_actions
+          for opponent_move in opponent_moves:
+              Q_pred[(state,action, prey_move)]=1.0
+              Q_prey[(state,opponent_move,action)]=1.0
+      for action in world.singleMoveList():
+          pi_pred[(state,action)]=1.0/num_actions
+
     steps = [0]*episodes
     rewards = [0]*episodes
     for i in range(episodes):

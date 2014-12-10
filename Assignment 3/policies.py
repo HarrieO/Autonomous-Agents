@@ -45,15 +45,15 @@ def softmaxPolicy(state, moveList, Q, tau):
 # hybrid between softmax and epsilon-greedy
 def minimax_policy(epsilon,values, state, actions):
 	probabilities = [epsilon+(1.0-epsilon)*values[(state,action)] for action in actions]
-	totalSum = np.sum(valuePerAction)
-	probs = valuePerAction/probabilities
+	totalSum = np.sum(probabilities)
+	probs = probabilities/totalSum
 	# picks an action,value pair over given probability distribution
 	return pickElementWithProbs(zip(actions,probs))
 
 # selects action according to given probabilities
 def greedy_policy(values, state, actions):
 	probabilities = [(action,values[(state,action)]) for action in actions]
-	totalSum = np.sum(valuePerAction)
-	probs = valuePerAction/probabilities
+	totalSum = np.sum(probabilities)
+	probs = probabilities/totalSum
 	# picks an action,value pair over given probability distribution
 	return pickElementWithProbs(zip(actions,probs))

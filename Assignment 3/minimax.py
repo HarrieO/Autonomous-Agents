@@ -64,7 +64,7 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
             # if (state,action_pred) not in Q_pred:
             #     Q_pred[state,action_pred] = initValue 
             Q_pred[(state,action_pred,action_prey)] = (1.0-alpha)*Q_pred[(state,action_pred,action_prey)] + alpha*(reward[1]+ gamma* V_pred[new_state])
-            # Q_prey[(state,action_pred,action_prey)] = (1.0-alpha)*Q_prey[(state,action_pred,action_prey)] + alpha*(reward[0]+ gamma* V_prey[new_state])
+            Q_prey[(state,action_pred,action_prey)] = (1.0-alpha)*Q_prey[(state,action_pred,action_prey)] + alpha*(reward[0]+ gamma* V_prey[new_state])
 
             # update pi
             # adapted from example: http://abel.ee.ucla.edu/cvxopt/examples/tutorial/lp.html
@@ -119,7 +119,8 @@ def minimax(episodes,initial_state,epsilon, decay, gamma, alpha=1.0):
 
 
             alpha *= decay
-        print "Episode",epi
+        if epi > 0 and epi % 10 == 0:
+            print "Episode",epi
         steps[epi]   = iterations
         if reward[1] > 0:
             rewards[epi] = 1

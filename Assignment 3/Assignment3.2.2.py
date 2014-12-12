@@ -19,7 +19,7 @@ avecatch = np.zeros((4,episodes))
 for predators in range(1,5):#range(1,5)[::-1]:
     totalcatch = np.zeros((episodes))
     for i in range(runs):
-        steps, rewards = Qlearning(episodes, predatorLocations[:predators], epsGreedyPolicy,alpha_pred=0.005,alpha_prey=0.2)
+        steps, rewards = Qlearning(episodes, predatorLocations[:predators], epsGreedyPolicy,alpha_pred=0.05,alpha_prey=0.5)
         steps   = np.array(steps)
         rewards = np.array(rewards)
         avesteps[predators-1,:] += steps

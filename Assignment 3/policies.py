@@ -14,7 +14,7 @@ def maxIndices(valueActionList):
 	maxv    = None
 	indices = []
 	for i, (value, action) in enumerate(valueActionList):
-		if (not maxv) or value > maxv:
+		if maxv == None or value > maxv:
 			indices = [i]
 			maxv = value
 		elif value == maxv:
@@ -24,12 +24,10 @@ def maxIndices(valueActionList):
 # picks an action according to epsilon-greedy policy
 def epsGreedyPolicy(state, moveList, Q, epsilon, initValue):
 	valuePerAction = [(Q.get((state,move),initValue), move) for move in moveList]
-
 	probs = [epsilon/len(valuePerAction)]*len(valuePerAction)
 	maxInd = maxIndices(valuePerAction)
 	for i in maxInd:
 		probs[i] += (1-epsilon)/len(maxInd)
-
 	# picks an action,value pair over given probability distribution
 	_,action = pickElementWithProbs(zip(valuePerAction,probs))
 	return action
@@ -44,7 +42,9 @@ def softmaxPolicy(state, moveList, Q, tau):
 
 # hybrid between softmax and epsilon-greedy
 def minimax_policy(epsilon,values, state, actions):
-	probabilities = [epsilon+(1.0-epsilon)*values[(state,action)] for action in actions]
+	if random.random() < epsilon:
+		return random.choice(actions)
+	probabilities = [values[(state,action)] for action in actions]
 	totalSum = np.sum(probabilities)
 	probs = probabilities/totalSum
 	# picks an action,value pair over given probability distribution

@@ -1,9 +1,9 @@
 import random
 
 class World(object):
-	def __init__(self, preyLoc, predatorLocs, width=11, height=11):
-		self.width  	= width
-		self.height 	= height
+	def __init__(self, preyLoc, predatorLocs, borderSize=11):
+		self.width  	= borderSize
+		self.height 	= borderSize
 		# position is the relative distance between predator and prey
 		self.position  	= tuple(sorted(
 							tuple(self.relativedist(predLoc[0]-preyLoc[0],predLoc[1]-preyLoc[1]) for predLoc in predatorLocs)
@@ -14,6 +14,22 @@ class World(object):
 		                if (dx,dy) != (0,0) ]
 		self.statePairs = None
 		self.allMoves   = None
+
+
+	def prettyPrint(self):
+		print "#" * (self.width*6-1 + 4)
+		for y in range(-(self.height-1)/2,(self.height-1)/2+1):
+			print "#",
+			for x in range(-(self.width-1)/2,(self.width-1)/2+1):
+				if x == 0 and y == 0:
+					print "PREY ",
+				elif (x,y) in  self.position:
+					print "PRED" + str(self.position.index((x,y))),
+				else:
+					print "_____",
+			print "#"
+		print "#" * (self.width*6-1 + 4)
+		print
 
 
 	# sets state of world to relative position
@@ -74,7 +90,7 @@ class World(object):
 	
 	# torialdistance on a dimension given an absolute distance and the span of dimension in the world (width height)
 	def toroidaldis(self, distance, span):
-		return int((distance+(span-1)/2.0)%11-(span-1)/2.0)
+		return int((distance+(span-1)/2.0)%self.width-(span-1)/2.0)
 
 	# returns the relative delta x and delta y given an absolute delta x and delta y
 	def relativedist(self, dx, dy):

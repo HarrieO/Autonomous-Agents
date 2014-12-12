@@ -52,8 +52,11 @@ def minimax_policy(epsilon,values, state, actions):
 
 # selects action according to given probabilities
 def greedy_policy(values, state, actions):
-	probabilities = [(action,values[(state,action)]) for action in actions]
+	probabilities = [values[(state,action)] for action in actions]
 	totalSum = np.sum(probabilities)
-	probs = probabilities/totalSum
+	if totalSum > 0:
+		probs = probabilities/totalSum
+	else:
+		probs = probabilities
 	# picks an action,value pair over given probability distribution
 	return pickElementWithProbs(zip(actions,probs))
